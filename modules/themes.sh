@@ -88,8 +88,24 @@ install_extra_themes() {
     done
 }
 
+install_ms_fonts() {
+    echo ""
+    echo "[+] Installing Microsoft Core Fonts (Arial, Times New Roman, etc.)..."
+    
+    if fc-list | grep -qi "Times New Roman"; then
+        echo "  [OK] MS Fonts already installed"
+    else
+        echo "  [+] Downloading and installing MS Core Fonts..."
+        sudo dnf install -y curl cabextract xorg-x11-font-utils fontconfig 2>/dev/null | tail -1
+        sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm 2>/dev/null || true
+        fc-cache -f -v > /dev/null 2>&1
+        echo "  [OK] MS Fonts installed (fixes document formatting in LibreOffice/Web)"
+    fi
+}
+
 setup_themes() {
     install_theme_dependencies
+    install_ms_fonts
     apply_theme
     install_extra_themes
 }

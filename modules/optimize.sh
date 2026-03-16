@@ -18,6 +18,8 @@ optimize_system() {
     optimize_btrfs
     optimize_limits
     optimize_browsers
+    optimize_dns
+    optimize_time_sync
 
     echo ""
     echo "[OK] System optimization complete"
@@ -38,7 +40,6 @@ optimize_dnf() {
     declare -A dnf_opts=(
         ["max_parallel_downloads"]="10"
         ["fastestmirror"]="True"
-        ["deltarpm"]="True"
         ["defaultyes"]="True"
         ["install_weak_deps"]="False"
         ["keepcache"]="False"
@@ -327,7 +328,7 @@ optimize_browsers() {
     local chrome_flags_dir="$HOME/.config"
     mkdir -p "$chrome_flags_dir"
 
-    for browser in "chrome" "chromium" "brave"; do
+        for browser in "chrome" "chromium" "brave"; do
         local flags_file="${chrome_flags_dir}/${browser}-flags.conf"
         if [[ ! -f "$flags_file" ]]; then
             cat <<EOF > "$flags_file"
@@ -339,4 +340,37 @@ EOF
             echo "  [OK] Flags for $browser already configured"
         fi
     done
+}
+
+optimize_dns() {
+    echo ""
+    echo "[+] Optimizing DNS resolution (systemd-resolved)..."
+    
+    local resolved_conf="/etc/systemd/resolved.conf.d/99-optimize.conf"
+    sudo mkdir -p /etc/systemd/resolved.conf.d
+    
+    if [[ ! -f "$resolved_conf" ]]; then
+        sudo tee "$resolved_conf" > /dev/null <<EOF
+[Resolve]
+Cache=yes
+CacheFromLocalhost=no
+LLMNR=no
+MulticastDNS=resolve
+EOF
+        sudo systemctl restart systemd-resolved 2>/dev/null
+        echo "  [OK] DNS caching enabled, LLMNR disabled (prevents timeouts)"
+    else
+        echo "  [OK] DNS already optimized"
+    fi
+}
+
+optimize_time_sync() {
+    echo ""
+    echo "[+] Fixing hardware clock for Windows dual-boot compatibility..."
+    
+    # Windows uses Local Time for the hardware clock, Linux uses UTC.
+    # This causes the clock to be wrong when switching OS.
+    # Setting Linux to use Local Time fixes this common annoyance.
+    timedatectl set-local-rtc 1 --adjust-system-clock 2>/dev/null || true
+    echo "  [OK] Hardware clock set to Local Time (LocalRTC=1)"
 }

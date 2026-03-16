@@ -79,5 +79,12 @@ install_flatpaks() {
         fi
     done < "$flatpak_file"
 
+    echo "[+] Fixing Flatpak permissions (allowing access to themes and fonts)..."
+    sudo flatpak override --filesystem=$HOME/.themes 2>/dev/null || true
+    sudo flatpak override --filesystem=$HOME/.icons 2>/dev/null || true
+    sudo flatpak override --filesystem=$HOME/.local/share/fonts 2>/dev/null || true
+    sudo flatpak override --filesystem=xdg-config/gtk-3.0 2>/dev/null || true
+    sudo flatpak override --filesystem=xdg-config/gtk-4.0 2>/dev/null || true
+
     echo "[OK] Flatpak installation complete"
 }

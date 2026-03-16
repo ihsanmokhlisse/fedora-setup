@@ -59,15 +59,15 @@ You tried the optimizations, but a specific kernel parameter or power setting is
 ### Phase 3 — Desktop Environment
 | Module | Description |
 |--------|-------------|
-| **themes** | GTK theme, icons, cursor, fonts |
+| **themes** | GTK theme, icons, cursor, fonts, Microsoft Core Fonts |
 | **extensions** | 16 GNOME Shell extensions |
-| **gnome** | Desktop settings (dock, blur, keybindings, favorites) |
+| **gnome** | Desktop settings (dock, blur, keybindings, favorites, Nautilus tweaks) |
 | **lockscreen** | Wallpaper sync + BingWallpaper auto-sync |
 
 ### Phase 4 — Performance Optimization
 | Module | Description |
 |--------|-------------|
-| **optimize** | DNF speed, boot time, kernel tuning, network (BBR), I/O scheduler, memory, services cleanup, browser hardware acceleration (Wayland/PipeWire) |
+| **optimize** | DNF speed, boot time, kernel tuning, network (BBR), I/O scheduler, memory, services cleanup, browser hardware acceleration (Wayland/PipeWire), DNS caching, Dual-Boot time sync |
 
 ### Phase 5 — Power Management
 | Module | Description |

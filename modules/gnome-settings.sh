@@ -66,6 +66,11 @@ apply_gnome_settings() {
     gsettings set org.gnome.desktop.interface font-antialiasing 'rgba' 2>/dev/null || true
     gsettings set org.gnome.desktop.interface font-hinting 'slight' 2>/dev/null || true
 
+    echo "[+] Configuring Nautilus (File Manager) defaults..."
+    gsettings set org.gtk.Settings.FileChooser sort-directories-first true 2>/dev/null || true
+    gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view' 2>/dev/null || true
+    gsettings set org.gnome.nautilus.preferences show-hidden-files true 2>/dev/null || true
+
     configure_user_avatar
     configure_gdm_login_screen
     configure_video_wallpaper
