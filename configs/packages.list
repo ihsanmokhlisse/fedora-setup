@@ -1,0 +1,199 @@
+# ============================================================
+#  SYSTEM UTILITIES
+# ============================================================
+htop
+nvtop
+btop
+lsof
+tree
+bc
+jq
+unzip
+zip
+tar
+lrzsz
+plocate
+tcpdump
+nmap-ncat
+bind-utils
+net-tools
+iproute
+traceroute
+wget2-wget
+curl
+smartmontools
+dmidecode
+
+# ============================================================
+#  TERMINAL & SHELL
+# ============================================================
+vim-minimal
+nano
+tmux
+bash-completion
+bash-color-prompt
+
+# ============================================================
+#  DEVELOPMENT — Compilers & Build Tools
+# ============================================================
+git
+gcc
+gcc-c++
+make
+cmake
+bison
+
+# ============================================================
+#  DEVELOPMENT — Languages & Runtimes
+# ============================================================
+python3
+python3-pip
+# nodejs
+# npm
+# golang
+# rust
+# cargo
+
+# ============================================================
+#  DEVELOPMENT — IDEs & Editors
+# ============================================================
+cursor
+# pycharm-community
+
+# ============================================================
+#  OFFICE & PRODUCTIVITY
+# ============================================================
+libreoffice-writer
+libreoffice-calc
+libreoffice-impress
+
+# ============================================================
+#  WEB BROWSERS
+# ============================================================
+firefox
+# google-chrome-stable
+
+# ============================================================
+#  MULTIMEDIA — Players
+# ============================================================
+vlc
+# mpv
+# celluloid
+
+# ============================================================
+#  MULTIMEDIA — Audio Stack
+# ============================================================
+pipewire
+pipewire-alsa
+pipewire-pulseaudio
+pipewire-jack-audio-connection-kit
+pipewire-codec-aptx
+
+# ============================================================
+#  MULTIMEDIA — Codecs & Libraries (requires RPM Fusion)
+# ============================================================
+ffmpeg
+ffmpeg-libs
+gstreamer1-plugins-good
+gstreamer1-plugins-good-extras
+gstreamer1-plugins-bad-free
+gstreamer1-plugins-bad-freeworld
+gstreamer1-plugins-ugly
+gstreamer1-plugins-ugly-free
+gstreamer1-plugin-libav
+gstreamer1-plugin-openh264
+gstreamer1-plugin-dav1d
+libavcodec-freeworld
+x264-libs
+x265-libs
+lame-libs
+faad2-libs
+flac-libs
+libvorbis
+libtheora
+libvpx
+opus
+libdav1d
+svt-av1-libs
+mozilla-openh264
+intel-media-driver
+libva-intel-driver
+mesa-va-api-freeworld
+mesa-vdpau-freeworld
+
+# ============================================================
+#  GRAPHICS & DESIGN
+# ============================================================
+# gimp
+# inkscape
+# blender
+# krita
+
+# ============================================================
+#  GAMING
+# ============================================================
+# lutris
+# bottles
+# gamemode
+# gamescope
+# mangohud
+# vkBasalt
+# wine-core
+# wine-alsa
+# wine-pulseaudio
+
+# ============================================================
+#  VIRTUALIZATION & CONTAINERS
+# ============================================================
+podman
+gnome-boxes
+# virtualbox-guest-additions
+# docker
+# docker-compose
+
+# ============================================================
+#  NETWORKING & REMOTE
+# ============================================================
+openssh-clients
+openssh-server
+# synergy
+# remmina
+
+# ============================================================
+#  SYSTEM MANAGEMENT
+# ============================================================
+gparted
+timeshift
+baobab
+gnome-system-monitor
+
+# ============================================================
+#  GNOME DESKTOP
+# ============================================================
+gnome-tweaks
+gnome-browser-connector
+gnome-shell-extension-pop-shell
+dconf
+nautilus
+
+# ============================================================
+#  FONTS
+# ============================================================
+adobe-source-code-pro-fonts
+aajohan-comfortaa-fonts
+adwaita-sans-fonts
+adwaita-mono-fonts
+
+# ============================================================
+#  THEMES & APPEARANCE
+# ============================================================
+adwaita-cursor-theme
+adwaita-icon-theme
+adwaita-icon-theme-legacy
+
+# ============================================================
+#  HARDWARE SUPPORT
+# ============================================================
+alsa-sof-firmware
+alsa-ucm
+alsa-utils

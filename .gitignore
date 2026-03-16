@@ -1,0 +1,12 @@
+setup.log
+*.swp
+*.swo
+*~
+.DS_Store
+
+# AI and Editor
+.cursor/
+.cursorrules
+agents.md
+.claude/
+

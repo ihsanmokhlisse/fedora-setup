@@ -1,0 +1,21 @@
+# GNOME Shell Extensions
+# Format: extension-uuid  (one per line)
+# Lines starting with # are ignored
+
+user-theme@gnome-shell-extensions.gcampax.github.com
+caffeine@patapon.info
+dash-to-dock@micxgx.gmail.com
+blur-my-shell@aunetx
+just-perfection-desktop@just-perfection
+CoverflowAltTab@palatis.blogspot.com
+gTile@vibou
+gnome-ui-tune@itstime.tech
+launch-new-instance@gnome-shell-extensions.gcampax.github.com
+pop-shell@system76.com
+lockscreen-extension@pratap.fastmail.fm
+Vitals@CoreCoding.com
+ding@rastersoft.com
+BingWallpaper@ineffable-gmail.com
+ddterm@amezin.github.com
+search-light@icedman.github.com
+quick-settings-avatar@d-go
