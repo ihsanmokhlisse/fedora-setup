@@ -23,6 +23,8 @@ wget2-wget
 curl
 smartmontools
 dmidecode
+fuse
+cabextract
 
 # ============================================================
 #  TERMINAL & SHELL

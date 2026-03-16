@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-#  Fedora GNOME Setup — Intelligent system configuration script
+#  FedoraFlow — Intelligent system configuration script
 #  Detects your system and applies the best configuration automatically.
 #
 #  Usage:
@@ -30,7 +30,7 @@ header() {
     echo ""
     echo -e "${CYAN}${BOLD}╔═══════════════════════════════════════════════════════════╗${NC}"
     echo -e "${CYAN}${BOLD}║                                                           ║${NC}"
-    echo -e "${CYAN}${BOLD}║              Fedora GNOME Setup Script                     ║${NC}"
+    echo -e "${CYAN}${BOLD}║              FedoraFlow                     ║${NC}"
     echo -e "${CYAN}${BOLD}║        github.com/coldarianzefra/fedora-setup              ║${NC}"
     echo -e "${CYAN}${BOLD}║                                                           ║${NC}"
     echo -e "${CYAN}${BOLD}║  Packages • Extensions • Themes • Power • Security • Perf ║${NC}"
@@ -124,7 +124,7 @@ run_all() {
     echo "    [x] GPU drivers (if NVIDIA detected)"
     echo "    [x] Themes, icons, fonts, appearance"
     echo "    [x] GNOME extensions (16 extensions)"
-    echo "    [x] Desktop settings & lock screen wallpaper"
+    echo "    [x] Desktop settings (tap-to-click, fractional scaling, lock screen)"
     echo "    [x] Performance (DNF, boot, kernel, network, I/O, memory)"
     echo "    [x] Power management (tuned + NVIDIA suspend + GNOME)"
     echo "    [x] Security (firewall, kernel, SELinux, fail2ban, SSH)"

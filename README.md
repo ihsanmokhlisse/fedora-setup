@@ -1,11 +1,11 @@
-# Fedora GNOME Setup
+# FedoraFlow
 
 An intelligent, all-in-one setup script that transforms a fresh Fedora install into the most optimized, powerful, and secure GNOME desktop possible — packages, extensions, themes, performance tuning, power management, security hardening, and auto-updates, all in one command.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/coldarianzefra/fedora-setup.git
+git clone https://github.com/ihsanmokhlisse/fedora-setup.git
 cd fedora-setup
 chmod +x setup.sh
 ./setup.sh
@@ -16,6 +16,30 @@ Run everything non-interactively:
 ```bash
 ./setup.sh --all
 ```
+
+## Usage Scenarios
+
+FedoraFlow is highly modular. You don't have to run the whole suite if you only want specific improvements.
+
+### Scenario 1: The Fresh Install (Recommended)
+You just installed Fedora and want everything set up perfectly—codecs, drivers, themes, and performance.
+* **Command:** `./setup.sh` -> Choose Option `1` (Everything)
+
+### Scenario 2: The Battery Saver (Laptop Users)
+You love your current setup, but your laptop battery drains too fast. You only want the power optimizations (NVIDIA deep sleep, tuned profiles, charge thresholds).
+* **Command:** `./setup.sh --module power`
+
+### Scenario 3: The Performance Junkie
+Your system feels a bit sluggish. You want faster DNF downloads, optimized disk I/O, BBR network congestion control, and faster boot times.
+* **Command:** `./setup.sh --module optimize`
+
+### Scenario 4: The Developer Workspace
+You want the essential development tools, VS Code/Cursor, Docker/Podman, and increased file descriptor limits so your IDE doesn't crash watching large projects.
+* **Command:** `./setup.sh --module packages` and `./setup.sh --module optimize`
+
+### Scenario 5: Safe Revert
+You tried the optimizations, but a specific kernel parameter or power setting is causing issues with your specific hardware.
+* **Command:** `./setup.sh --restore`
 
 ## What It Does
 

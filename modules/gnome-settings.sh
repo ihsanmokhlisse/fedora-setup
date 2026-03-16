@@ -56,6 +56,16 @@ apply_gnome_settings() {
     echo "[+] Setting Super+L to lock screen..."
     gsettings set org.gnome.settings-daemon.plugins.media-keys screensaver "['<Super>l']"
 
+    echo "[+] Enabling tap-to-click for touchpads..."
+    gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click true 2>/dev/null || true
+
+    echo "[+] Enabling experimental fractional scaling (Wayland)..."
+    gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']" 2>/dev/null || true
+
+    echo "[+] Setting up font antialiasing..."
+    gsettings set org.gnome.desktop.interface font-antialiasing 'rgba' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface font-hinting 'slight' 2>/dev/null || true
+
     configure_user_avatar
     configure_gdm_login_screen
     configure_video_wallpaper
