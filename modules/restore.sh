@@ -30,15 +30,35 @@ restore_system() {
     
     echo "[+] Reverting system optimizations..."
     sudo rm -f /etc/sysctl.d/99-performance.conf
+    sudo rm -f /etc/sysctl.d/99-gaming.conf
+    sudo rm -f /etc/sysctl.d/99-zram.conf
     sudo rm -f /etc/udev/rules.d/99-io-scheduler.rules
     sudo rm -f /etc/systemd/journald.conf.d/99-optimize.conf
     sudo rm -f /etc/systemd/coredump.conf.d/99-optimize.conf
+    sudo rm -f /etc/systemd/resolved.conf.d/99-optimize.conf
+    sudo rm -f /etc/systemd/resolved.conf.d/99-doh.conf
     sudo rm -f /etc/security/limits.d/99-performance.conf
     sudo rm -f /etc/profile.d/firefox-wayland.sh
+    sudo rm -f /etc/profile.d/firefox-portal.sh
     rm -f "$HOME/.config/chrome-flags.conf"
     rm -f "$HOME/.config/chromium-flags.conf"
     rm -f "$HOME/.config/brave-flags.conf"
-    
+    rm -f "$HOME/.config/environment.d/50-portal.conf"
+
+    echo "[+] Reverting network hardening..."
+    sudo rm -f /etc/NetworkManager/conf.d/99-wifi-powersave.conf
+    sudo rm -f /etc/NetworkManager/conf.d/99-mac-randomization.conf
+    sudo rm -f /etc/NetworkManager/conf.d/99-wifi-reconnect.conf
+    sudo rm -f /etc/NetworkManager/conf.d/99-ipv6-privacy.conf
+    sudo nmcli general reload 2>/dev/null || true
+
+    echo "[+] Reverting hibernate/sleep config..."
+    sudo rm -f /etc/systemd/sleep.conf.d/99-fedoraflow.conf
+    sudo rm -f /etc/systemd/logind.conf.d/99-lid-hibernate.conf
+
+    echo "[+] Reverting battery threshold..."
+    sudo rm -f /etc/udev/rules.d/99-battery-threshold.rules
+
     echo "[+] Reverting security hardening..."
     sudo rm -f /etc/sysctl.d/99-security.conf
     sudo rm -f /etc/ssh/sshd_config.d/99-hardened.conf

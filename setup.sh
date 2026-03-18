@@ -13,7 +13,11 @@ set -euo pipefail
 #  Profiles: standard, dev, gaming, ultimate
 #  Modules: sudo, repos, packages, flatpaks, nvidia, themes, extensions,
 #           gnome, lockscreen, power, security, updates, optimize, backup,
-#           dev, gaming, debloat, restore
+#           dev, gaming, debloat, screen-sharing, maintenance, network,
+#           hibernate, privacy, battery, printer, restore
+#
+#  Diagnostics:
+#    ./setup.sh --check          # Run system health check
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${SCRIPT_DIR}/setup.log"
@@ -65,13 +69,23 @@ run_module() {
         backup)     configure_backups ;;
         dev)        setup_dev_env ;;
         gaming)     setup_gaming_env ;;
-        debloat)    setup_debloat ;;
-        restore)    restore_system ;;
+        debloat)        setup_debloat ;;
+        screen-sharing) fix_screen_sharing ;;
+        maintenance)    run_maintenance ;;
+        network)        harden_network ;;
+        hibernate)      configure_hibernate ;;
+        privacy)        harden_privacy ;;
+        battery)        configure_battery_threshold ;;
+        printer)        setup_printer_scanner ;;
+        healthcheck)    run_healthcheck ;;
+        restore)        restore_system ;;
         *)
             err "Unknown module: $name"
             echo "Available: sudo, repos, packages, flatpaks, nvidia, themes,"
             echo "           extensions, gnome, lockscreen, power, security,"
-            echo "           updates, optimize, backup, dev, gaming, debloat, restore"
+            echo "           updates, optimize, backup, dev, gaming, debloat,"
+            echo "           screen-sharing, maintenance, network, hibernate,"
+            echo "           privacy, battery, printer, healthcheck, restore"
             return 1
             ;;
     esac
@@ -85,42 +99,59 @@ run_all() {
     echo -e "${GREEN}${BOLD}Starting FedoraFlow Profile: ${profile_name^^}${NC}"
     echo ""
 
-    echo -e "${BOLD}Phase 1/8 — System Basics${NC}"
+    echo -e "${BOLD}Phase 1/12 — System Basics${NC}"
     configure_sudo
     setup_repos
 
     echo ""
-    echo -e "${BOLD}Phase 2/7 — Packages & Applications${NC}"
+    echo -e "${BOLD}Phase 2/12 — Packages & Applications${NC}"
     install_packages
     install_flatpaks
     install_nvidia
 
     echo ""
-    echo -e "${BOLD}Phase 3/7 — Desktop Environment${NC}"
+    echo -e "${BOLD}Phase 3/12 — Desktop Environment${NC}"
     setup_themes
     install_extensions
     apply_gnome_settings
     configure_lockscreen_wallpaper_sync
 
     echo ""
-    echo -e "${BOLD}Phase 4/7 — Performance Optimization${NC}"
+    echo -e "${BOLD}Phase 4/12 — Performance Optimization${NC}"
     optimize_system
 
     echo ""
-    echo -e "${BOLD}Phase 5/7 — Power Management${NC}"
+    echo -e "${BOLD}Phase 5/12 — Power Management${NC}"
     configure_power
 
     echo ""
-    echo -e "${BOLD}Phase 6/7 — Security Hardening${NC}"
+    echo -e "${BOLD}Phase 6/12 — Security Hardening${NC}"
     configure_security
 
     echo ""
-    echo -e "${BOLD}Phase 7/8 — System Updates${NC}"
+    echo -e "${BOLD}Phase 7/12 — System Updates${NC}"
     configure_updates
 
     echo ""
-    echo -e "${BOLD}Phase 8/8 — System Backup & Snapshots${NC}"
+    echo -e "${BOLD}Phase 8/12 — System Backup & Snapshots${NC}"
     configure_backups
+
+    echo ""
+    echo -e "${BOLD}Phase 9/12 — Screen Sharing Fix${NC}"
+    fix_screen_sharing
+
+    echo ""
+    echo -e "${BOLD}Phase 10/12 — Network Hardening${NC}"
+    harden_network
+
+    echo ""
+    echo -e "${BOLD}Phase 11/12 — Laptop Optimizations${NC}"
+    configure_hibernate
+    configure_battery_threshold
+
+    echo ""
+    echo -e "${BOLD}Phase 12/12 — Printer & Scanner Support${NC}"
+    setup_printer_scanner
 
     # Profile Additions
     if [[ "$profile_name" == "dev" ]] || [[ "$profile_name" == "ultimate" ]]; then
@@ -131,6 +162,7 @@ run_all() {
     fi
     if [[ "$profile_name" == "ultimate" ]]; then
         setup_debloat
+        harden_privacy
     fi
 
     local elapsed=$(( SECONDS - start_time ))
@@ -155,6 +187,11 @@ run_all() {
     echo "    [x] Security (firewall, kernel, SELinux, fail2ban, SSH)"
     echo "    [x] Auto-updates (DNF security, Flatpak, firmware)"
     echo "    [x] Btrfs Snapshots (Timeshift + GRUB integration)"
+    echo "    [x] Wayland Screen Sharing (xdg-desktop-portal + PipeWire)"
+    echo "    [x] Network Hardening (WiFi power-save, MAC randomization, IPv6 privacy)"
+    echo "    [x] Suspend-then-Hibernate (laptop battery saver)"
+    echo "    [x] Battery Charge Threshold (80% limit for longevity)"
+    echo "    [x] Printer & Scanner support (CUPS, SANE, IPP auto-discovery)"
     if [[ "$profile_name" == "dev" ]] || [[ "$profile_name" == "ultimate" ]]; then
         echo "    [x] Dev Environment (Podman, Toolbox, NVM, Zsh, Starship)"
     fi
@@ -162,14 +199,14 @@ run_all() {
         echo "    [x] Gaming Environment (Steam, Lutris, Gamemode, Kernel tweaks)"
     fi
     if [[ "$profile_name" == "ultimate" ]]; then
-        echo "    [x] Debloat & Privacy (Removed telemetry and bloatware)"
+        echo "    [x] Debloat & Privacy (telemetry, tracker blocking, Firefox hardening, DoH)"
     fi
     echo ""
     echo "  Recommended next steps:"
     echo "    1. Reboot the system for all changes to take effect"
     echo "    2. Log back in and open Extension Manager to fine-tune"
-    echo "    3. Run 'tuned-adm active' to verify power profile"
-    echo "    4. Run 'systemd-analyze' to check improved boot time"
+    echo "    3. Run './setup.sh --check' to verify system health"
+    echo "    4. Run './setup.sh --module maintenance' for periodic cleanup"
     echo ""
     echo "  Log saved to: ${LOG_FILE}"
     echo ""
@@ -199,13 +236,21 @@ interactive_menu() {
     echo "  16) Security hardening"
     echo "  17) System updates + auto-updates"
     echo "  18) Configure Btrfs Snapshots (Timeshift)"
+    echo "  19) Wayland Screen Sharing Fix"
+    echo "  20) Network Hardening (WiFi, MAC, IPv6)"
+    echo "  21) Suspend-then-Hibernate (laptop)"
+    echo "  22) Privacy Hardening (Firefox, DoH, trackers)"
+    echo "  23) Battery Charge Threshold (80% limit)"
+    echo "  24) Printer & Scanner Setup"
     echo ""
-    echo -e "  ${BOLD}── Maintenance ──${NC}"
-    echo "  19) Restore / Rollback optimizations"
+    echo -e "  ${BOLD}── Diagnostics & Maintenance ──${NC}"
+    echo "  25) System Health Check"
+    echo "  26) System Maintenance (cleanup)"
+    echo "  27) Restore / Rollback optimizations"
     echo ""
     echo "   0) Exit"
     echo ""
-    read -rp "Choose [0-19]: " choice
+    read -rp "Choose [0-27]: " choice
 
     case "$choice" in
         1)  run_all "standard" ;;
@@ -226,7 +271,15 @@ interactive_menu() {
         16) configure_security ;;
         17) configure_updates ;;
         18) configure_backups ;;
-        19) restore_system ;;
+        19) fix_screen_sharing ;;
+        20) harden_network ;;
+        21) configure_hibernate ;;
+        22) harden_privacy ;;
+        23) configure_battery_threshold ;;
+        24) setup_printer_scanner ;;
+        25) run_healthcheck ;;
+        26) run_maintenance ;;
+        27) restore_system ;;
         0)  echo "Bye!"; exit 0 ;;
         *)  err "Invalid choice"; interactive_menu ;;
     esac
@@ -248,6 +301,10 @@ main() {
         run_all "gaming"
     elif [[ "${1:-}" == "--profile" && "${2:-}" == "ultimate" ]]; then
         run_all "ultimate"
+    elif [[ "${1:-}" == "--check" ]]; then
+        run_healthcheck
+    elif [[ "${1:-}" == "--maintenance" ]]; then
+        run_maintenance
     elif [[ "${1:-}" == "--restore" ]]; then
         restore_system
     elif [[ "${1:-}" == "--module" ]] && [[ -n "${2:-}" ]]; then
