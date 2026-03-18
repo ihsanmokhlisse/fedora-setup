@@ -48,7 +48,7 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 |---------|---------|----------|-----------------|
 | **Standard** | `--profile standard` | General Users | The ultimate baseline. ZRAM tuning, Btrfs snapshots, Tuned power profiles, Firewalld hardening, MS Fonts, UI tweaks, and hardware video acceleration. |
 | **Developer** | `--profile dev` | Software Engineers | *Standard* + **Podman** (rootless containers), **Toolbox** (isolated dev environments), **NVM**, **Zsh**, **Starship** prompt, and **GNU Stow** (dotfiles management). |
-| **Gamer** | `--profile gaming` | Linux Gamers | *Standard* + **Steam**, **Lutris**, **Gamemode**, **MangoHud**, 32-bit Vulkan libs, and the crucial `vm.max_map_count` kernel tweak. |
+| **Gamer** | `--profile gaming` | Linux Gamers | *Standard* + **Steam**, **Lutris**, **Proton-GE**, **Gamescope**, **Gamemode**, **MangoHud**, **Wine**, **CoreCtrl/nvidia-settings**, 32-bit Vulkan libs, and deep kernel scheduler tuning. |
 | **Ultimate** | `--profile ultimate` | Power Users | *Standard* + *Developer* + *Gamer* + **Debloat** (safely removes GNOME bloatware and completely disables Fedora/GNOME telemetry). |
 
 ---
@@ -91,6 +91,17 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 * **Font Rendering:** Enables `rgba` subpixel antialiasing and installs Microsoft Core Fonts (Arial, Times New Roman) so web and office documents render perfectly.
 * **GNOME Annoyances Fixed:** Automatically enables tap-to-click, fractional scaling (Wayland), and fixes Nautilus to sort folders first and use list view.
 * **Flatpak Integration:** Exposes `~/.themes`, `~/.icons`, and `~/.fonts` to Flatpaks globally so containerized apps don't look ugly and out of place.
+</details>
+
+<details>
+<summary><b>🎮 Gaming (Gamer Profile)</b></summary>
+
+* **Kernel Scheduler Tuning:** Disables `sched_autogroup` so Gamemode and `nice` levels actually work. Reduces scheduler latency for smoother frame pacing. Enables `tcp_low_latency` for competitive online games.
+* **Proton-GE:** Installs ProtonUp-Qt so users can easily download GloriousEggroll's custom Proton builds, which fix hundreds of games that don't work with stock Proton.
+* **Gamescope:** Valve's micro-compositor. Gives you integer scaling, frame rate limiting, and FSR (AMD FidelityFX) for *any* game.
+* **Wine + Winetricks:** Full Wine stack with 32-bit dependencies for non-Steam games launched through Lutris.
+* **GPU Tools:** Installs `nvidia-settings` with Coolbits (fan/clock control) for NVIDIA, or `corectrl` (passwordless) for AMD GPU tuning.
+* **MangoHud Config:** Drops a clean default config showing FPS, CPU/GPU temps, RAM/VRAM usage. Toggle with `Right Shift + F12`.
 </details>
 
 <details>
