@@ -13,6 +13,7 @@ optimize_system() {
     optimize_kernel
     optimize_io
     optimize_memory
+    optimize_zram
     optimize_services
     optimize_journal
     optimize_btrfs
@@ -188,6 +189,41 @@ optimize_memory() {
     echo "  [OK] Memory optimized"
 }
 
+optimize_zram() {
+    echo ""
+    echo "[+] Optimizing ZRAM for maximum memory efficiency..."
+
+    local zram_conf="/etc/systemd/zram-generator.conf"
+    
+    if [[ ! -f "$zram_conf" ]] || ! grep -q "compression-algorithm=zstd" "$zram_conf" 2>/dev/null; then
+        sudo tee "$zram_conf" > /dev/null <<EOF
+[zram0]
+zram-size = ram
+compression-algorithm = zstd
+swap-priority = 100
+fs-type = swap
+EOF
+        sudo systemctl daemon-reload 2>/dev/null
+        sudo systemctl restart systemd-zram-setup@zram0.service 2>/dev/null || true
+        echo "  [OK] ZRAM configured: 100% RAM size, zstd compression"
+    else
+        echo "  [OK] ZRAM already optimized"
+    fi
+
+    # Optimize sysctl for ZRAM
+    local sysctl_zram="/etc/sysctl.d/99-zram.conf"
+    if [[ ! -f "$sysctl_zram" ]]; then
+        sudo tee "$sysctl_zram" > /dev/null <<EOF
+vm.swappiness = 100
+vm.watermark_scale_factor = 125
+vm.watermark_boost_factor = 0
+vm.page-cluster = 0
+EOF
+        sudo sysctl --system -q 2>/dev/null
+        echo "  [OK] Kernel parameters tuned for ZRAM (swappiness=100)"
+    fi
+}
+
 optimize_services() {
     echo ""
     echo "[+] Disabling unnecessary services..."
@@ -332,10 +368,13 @@ optimize_browsers() {
         local flags_file="${chrome_flags_dir}/${browser}-flags.conf"
         if [[ ! -f "$flags_file" ]]; then
             cat <<EOF > "$flags_file"
---enable-features=WaylandWindowDecorations,WebRTCPipeWireCapturer
+--enable-features=WaylandWindowDecorations,WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder,CanvasOopRasterization
 --ozone-platform-hint=auto
+--enable-gpu-rasterization
+--enable-zero-copy
+--ignore-gpu-blocklist
 EOF
-            echo "  [OK] Added Wayland/PipeWire flags for $browser"
+            echo "  [OK] Added Wayland & Hardware Acceleration flags for $browser"
         else
             echo "  [OK] Flags for $browser already configured"
         fi

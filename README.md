@@ -67,7 +67,7 @@ You tried the optimizations, but a specific kernel parameter or power setting is
 ### Phase 4 — Performance Optimization
 | Module | Description |
 |--------|-------------|
-| **optimize** | DNF speed, boot time, kernel tuning, network (BBR), I/O scheduler, memory, services cleanup, browser hardware acceleration (Wayland/PipeWire), DNS caching, Dual-Boot time sync |
+| **optimize** | DNF speed, boot time, kernel tuning, network (BBR), I/O scheduler, ZRAM (100% size, zstd), services cleanup, browser hardware acceleration (Wayland/PipeWire/VA-API), DNS caching, Dual-Boot time sync |
 
 ### Phase 5 — Power Management
 | Module | Description |
@@ -83,6 +83,7 @@ You tried the optimizations, but a specific kernel parameter or power setting is
 | Module | Description |
 |--------|-------------|
 | **updates** | DNF system update, firmware update, Flatpak update, auto-update timers |
+| **backup** | Timeshift Btrfs snapshots, grub-btrfs integration, pre-update snapshots |
 
 ## System Detection
 
@@ -287,6 +288,7 @@ fedora-setup/
     ├── power.sh                      # Power management
     ├── security.sh                   # Security hardening
     ├── updates.sh                    # System updates + auto-updates
+    ├── backup.sh                     # Btrfs snapshots & backups
     └── restore.sh                    # Rollback optimizations
 ```
 

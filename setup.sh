@@ -11,7 +11,7 @@ set -euo pipefail
 #    ./setup.sh --restore    # Revert performance/power optimizations
 #
 #  Modules: sudo, repos, packages, flatpaks, nvidia, themes, extensions,
-#           gnome, lockscreen, power, security, updates, optimize, restore
+#           gnome, lockscreen, power, security, updates, optimize, backup, restore
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${SCRIPT_DIR}/setup.log"
@@ -60,12 +60,13 @@ run_module() {
         security)   configure_security ;;
         updates)    configure_updates ;;
         optimize)   optimize_system ;;
+        backup)     configure_backups ;;
         restore)    restore_system ;;
         *)
             err "Unknown module: $name"
             echo "Available: sudo, repos, packages, flatpaks, nvidia, themes,"
             echo "           extensions, gnome, lockscreen, power, security,"
-            echo "           updates, optimize, restore"
+            echo "           updates, optimize, backup, restore"
             return 1
             ;;
     esac
@@ -105,8 +106,12 @@ run_all() {
     configure_security
 
     echo ""
-    echo -e "${BOLD}Phase 7/7 — System Updates${NC}"
+    echo -e "${BOLD}Phase 7/8 — System Updates${NC}"
     configure_updates
+
+    echo ""
+    echo -e "${BOLD}Phase 8/8 — System Backup & Snapshots${NC}"
+    configure_backups
 
     local elapsed=$(( SECONDS - start_time ))
     echo ""
@@ -129,6 +134,7 @@ run_all() {
     echo "    [x] Power management (tuned + NVIDIA suspend + GNOME)"
     echo "    [x] Security (firewall, kernel, SELinux, fail2ban, SSH)"
     echo "    [x] Auto-updates (DNF security, Flatpak, firmware)"
+    echo "    [x] Btrfs Snapshots (Timeshift + GRUB integration)"
     echo ""
     echo "  Recommended next steps:"
     echo "    1. Reboot the system for all changes to take effect"
@@ -166,13 +172,14 @@ interactive_menu() {
     echo "  12) Power management (battery endurance)"
     echo "  13) Security hardening"
     echo "  14) System updates + auto-updates"
+    echo "  15) Configure Btrfs Snapshots (Timeshift)"
     echo ""
     echo -e "  ${BOLD}── Maintenance ──${NC}"
-    echo "  15) Restore / Rollback optimizations"
+    echo "  16) Restore / Rollback optimizations"
     echo ""
     echo "   0) Exit"
     echo ""
-    read -rp "Choose [0-15]: " choice
+    read -rp "Choose [0-16]: " choice
 
     case "$choice" in
         1)  run_all ;;
@@ -189,7 +196,8 @@ interactive_menu() {
         12) configure_power ;;
         13) configure_security ;;
         14) configure_updates ;;
-        15) restore_system ;;
+        15) configure_backups ;;
+        16) restore_system ;;
         0)  echo "Bye!"; exit 0 ;;
         *)  err "Invalid choice"; interactive_menu ;;
     esac
