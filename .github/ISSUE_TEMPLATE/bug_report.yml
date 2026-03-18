@@ -1,0 +1,39 @@
+name: Bug Report
+description: Create a report to help us improve FedoraFlow
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please provide as much detail as possible.
+  - type: input
+    id: os_version
+    attributes:
+      label: Fedora Version
+      description: e.g., Fedora Workstation 40, Fedora Silverblue 39
+      placeholder: Fedora 40
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware / GPU
+      description: What kind of machine are you running this on? (e.g., ThinkPad T14, NVIDIA RTX 3060, AMD Ryzen)
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      description: Please paste the relevant output from your terminal or `setup.log`.
+      render: shell
+    validations:
+      required: false
