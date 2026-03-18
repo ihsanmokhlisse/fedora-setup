@@ -44,8 +44,17 @@ install_toolbox() {
         sudo dnf install -y toolbox 2>&1 | tail -2
     fi
 
-    echo "  [OK] Toolbox installed."
-    echo "  [NOTE] Run 'toolbox enter' later to create your isolated dev container."
+    # Automatically create the default toolbox if it doesn't exist
+    if ! toolbox list | grep -q "fedora-toolbox"; then
+        echo "  [+] Creating default Fedora toolbox container..."
+        # Run in background to not block the script, as it downloads an image
+        toolbox create -y > /dev/null 2>&1 &
+        echo "  [OK] Default toolbox is being created in the background."
+    else
+        echo "  [OK] Default toolbox already exists."
+    fi
+
+    echo "  [NOTE] Run 'toolbox enter' later to access your isolated dev environment."
 }
 install_nvm() {
     echo ""
