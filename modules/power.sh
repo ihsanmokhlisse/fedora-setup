@@ -11,12 +11,14 @@ configure_power() {
     if [[ "$IS_LAPTOP" == true ]]; then
         echo "[+] Laptop detected — applying battery optimization..."
         setup_tuned_profile
+        setup_auto_cpufreq
         configure_gpu_power
         configure_kernel_power
         configure_gnome_power_laptop
         configure_battery_threshold
     else
         echo "[+] Desktop detected — applying performance-oriented power config..."
+        setup_auto_cpufreq
         configure_gpu_power
         configure_gnome_power_desktop
     fi
@@ -54,6 +56,48 @@ setup_tuned_profile() {
     fi
 
     echo "  [OK] tuned profile: fedora-endurance"
+}
+
+setup_auto_cpufreq() {
+    echo ""
+    echo "[+] Setting up auto-cpufreq (Dynamic CPU Power Management)..."
+
+    if command -v auto-cpufreq &>/dev/null; then
+        echo "  [OK] auto-cpufreq already installed"
+    else
+        echo "  [+] Installing auto-cpufreq..."
+        sudo dnf install -y auto-cpufreq 2>&1 | tail -2
+    fi
+
+    sudo systemctl enable --now auto-cpufreq 2>/dev/null
+
+    local conf_dir="/etc/auto-cpufreq.conf"
+    if [[ ! -f "$conf_dir" ]]; then
+        if [[ "$IS_LAPTOP" == true ]]; then
+            sudo tee "$conf_dir" > /dev/null <<EOF
+[charger]
+governor = performance
+energy_performance_preference = performance
+turbo = auto
+
+[battery]
+governor = powersave
+energy_performance_preference = power
+turbo = never
+EOF
+            echo "  [OK] auto-cpufreq configured: Performance on AC, Powersave on battery"
+        else
+            sudo tee "$conf_dir" > /dev/null <<EOF
+[charger]
+governor = performance
+energy_performance_preference = performance
+turbo = auto
+EOF
+            echo "  [OK] auto-cpufreq configured: Performance mode (desktop)"
+        fi
+    else
+        echo "  [OK] auto-cpufreq config already present"
+    fi
 }
 
 configure_gpu_power() {

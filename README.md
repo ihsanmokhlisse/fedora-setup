@@ -47,7 +47,7 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 | Profile | Command | Best For | What's Included |
 |---------|---------|----------|-----------------|
 | **Standard** | `--profile standard` | General Users | The ultimate baseline. ZRAM tuning, Btrfs snapshots, Tuned power profiles, Firewalld hardening, MS Fonts, UI tweaks, and hardware video acceleration. |
-| **Developer** | `--profile dev` | Software Engineers | *Standard* + **Podman** (rootless containers), **Toolbox** (isolated dev environments), **NVM**, **Zsh**, and the **Starship** prompt. |
+| **Developer** | `--profile dev` | Software Engineers | *Standard* + **Podman** (rootless containers), **Toolbox** (isolated dev environments), **NVM**, **Zsh**, **Starship** prompt, **Flatpak IDE integration** (flatpak-spawn), and **GNU Stow** (dotfiles management). |
 | **Gamer** | `--profile gaming` | Linux Gamers | *Standard* + **Steam**, **Lutris**, **Gamemode**, **MangoHud**, 32-bit Vulkan libs, and the crucial `vm.max_map_count` kernel tweak. |
 | **Ultimate** | `--profile ultimate` | Power Users | *Standard* + *Developer* + *Gamer* + **Debloat** (safely removes GNOME bloatware and completely disables Fedora/GNOME telemetry). |
 
@@ -58,6 +58,7 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 <details>
 <summary><b>🔋 Power Management (The "MacBook-ification" of Fedora)</b></summary>
 
+* **auto-cpufreq:** Dynamically adjusts the CPU governor and turbo boost in real-time based on load and power state. Performance on AC, Powersave on battery—automatically.
 * **Custom Tuned Profile:** Installs a custom `fedora-endurance` profile balancing performance and battery.
 * **NVIDIA D3cold Suspend:** Forces NVIDIA GPUs to completely power down when not in use (Saves 5-15W of power).
 * **Battery Longevity:** Automatically detects laptop batteries and sets charge thresholds to 75-80% to prevent battery degradation.
@@ -72,6 +73,7 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 * **I/O & Disk:** Sets NVMe schedulers to `none`, increases read-ahead to 2048KB, and adds `noatime` to Btrfs mounts.
 * **Browser Hardware Acceleration:** Injects flags into Chrome/Brave/Firefox to force Wayland and VA-API GPU video decoding (drastically lowers CPU usage on YouTube/Netflix).
 * **Dual-Boot Fix:** Forces hardware clock to Local Time to prevent Windows/Linux time desync.
+* **Bluetooth Audio:** Forces PipeWire to prioritize high-quality codecs (LDAC > aptX HD > aptX > AAC > SBC) and enables mSBC wideband speech for crystal-clear mic quality on calls.
 </details>
 
 <details>
@@ -89,6 +91,16 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 * **Font Rendering:** Enables `rgba` subpixel antialiasing and installs Microsoft Core Fonts (Arial, Times New Roman) so web and office documents render perfectly.
 * **GNOME Annoyances Fixed:** Automatically enables tap-to-click, fractional scaling (Wayland), and fixes Nautilus to sort folders first and use list view.
 * **Flatpak Integration:** Exposes `~/.themes`, `~/.icons`, and `~/.fonts` to Flatpaks globally so containerized apps don't look ugly and out of place.
+</details>
+
+<details>
+<summary><b>👨‍💻 Developer Experience (Dev Profile)</b></summary>
+
+* **Podman + Toolbox:** Rootless, daemonless containers and isolated dev environments. Install messy build tools inside Toolbox without affecting the host OS.
+* **Flatpak IDE Integration:** Installs `flatpak-spawn` and creates host-wrapper scripts so Flatpak-sandboxed IDEs (VS Code, Cursor) can access host tools like `git`, `node`, `python3`, `podman`, etc.
+* **GNU Stow:** Automatically detects and symlinks a `~/.dotfiles` repository. Manage your `.zshrc`, `.gitconfig`, and `starship.toml` across machines effortlessly.
+* **NVM:** Node Version Manager for clean, per-project Node.js versions without polluting the system.
+* **Zsh + Starship:** A beautiful, fast, git-aware terminal prompt out of the box.
 </details>
 
 ---

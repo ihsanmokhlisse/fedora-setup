@@ -11,6 +11,8 @@ setup_dev_env() {
     install_podman
     install_toolbox
     install_nvm
+    setup_flatpak_ide_integration
+    setup_dotfiles
     setup_terminal
 
     echo ""
@@ -56,6 +58,65 @@ install_toolbox() {
 
     echo "  [NOTE] Run 'toolbox enter' later to access your isolated dev environment."
 }
+setup_flatpak_ide_integration() {
+    echo ""
+    echo "[+] Configuring Flatpak IDE integration with host system..."
+
+    # flatpak-spawn allows Flatpak apps (like VS Code, Cursor) to execute
+    # commands on the host or inside Toolbox containers.
+    sudo dnf install -y flatpak-spawn 2>/dev/null | tail -1
+
+    # Create host-spawn wrapper scripts so Flatpak IDEs can find git, node, python etc.
+    local bin_dir="$HOME/.local/bin"
+    mkdir -p "$bin_dir"
+
+    local tools=("git" "node" "npm" "npx" "python3" "pip" "gcc" "make" "cargo" "go" "podman")
+    for tool in "${tools[@]}"; do
+        local wrapper="${bin_dir}/host-${tool}"
+        if [[ ! -f "$wrapper" ]]; then
+            cat > "$wrapper" <<EOF
+#!/bin/sh
+exec flatpak-spawn --host $tool "\$@"
+EOF
+            chmod +x "$wrapper"
+        fi
+    done
+
+    # Allow Flatpak IDEs to talk to the host session bus
+    sudo flatpak override --filesystem=home 2>/dev/null || true
+    sudo flatpak override --talk-name=org.freedesktop.Flatpak 2>/dev/null || true
+
+    echo "  [OK] Flatpak IDE wrappers installed in ~/.local/bin/host-*"
+    echo "  [NOTE] Point your Flatpak IDE's terminal to 'flatpak-spawn --host bash' for full host access"
+}
+
+setup_dotfiles() {
+    echo ""
+    echo "[+] Setting up dotfiles management (GNU Stow)..."
+
+    if ! command -v stow &>/dev/null; then
+        sudo dnf install -y stow 2>&1 | tail -1
+    fi
+
+    local dotfiles_dir="$HOME/.dotfiles"
+    if [[ -d "$dotfiles_dir" ]]; then
+        echo "  [+] Detected existing ~/.dotfiles repository, symlinking..."
+        cd "$dotfiles_dir"
+        for dir in */; do
+            dir="${dir%/}"
+            stow --restow "$dir" 2>/dev/null && \
+                echo "  [OK] Symlinked: $dir" || \
+                echo "  [WARN] Conflict symlinking: $dir (manual review needed)"
+        done
+        cd - > /dev/null
+    else
+        mkdir -p "$dotfiles_dir"
+        echo "  [OK] GNU Stow installed. Created ~/.dotfiles directory."
+        echo "  [NOTE] Place config folders inside ~/.dotfiles/ (e.g., ~/.dotfiles/zsh/.zshrc)"
+        echo "         then run 'cd ~/.dotfiles && stow zsh' to symlink them."
+    fi
+}
+
 install_nvm() {
     echo ""
     echo "[+] Installing Node Version Manager (NVM)..."

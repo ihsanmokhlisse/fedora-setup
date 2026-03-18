@@ -21,6 +21,7 @@ optimize_system() {
     optimize_browsers
     optimize_dns
     optimize_time_sync
+    optimize_bluetooth_audio
 
     echo ""
     echo "[OK] System optimization complete"
@@ -407,9 +408,53 @@ optimize_time_sync() {
     echo ""
     echo "[+] Fixing hardware clock for Windows dual-boot compatibility..."
     
-    # Windows uses Local Time for the hardware clock, Linux uses UTC.
-    # This causes the clock to be wrong when switching OS.
-    # Setting Linux to use Local Time fixes this common annoyance.
     timedatectl set-local-rtc 1 --adjust-system-clock 2>/dev/null || true
     echo "  [OK] Hardware clock set to Local Time (LocalRTC=1)"
+}
+
+optimize_bluetooth_audio() {
+    echo ""
+    echo "[+] Optimizing Bluetooth audio codecs (PipeWire)..."
+
+    # PipeWire sometimes defaults to SBC (low quality) for Bluetooth headphones.
+    # Force it to prioritize high-quality codecs: LDAC > aptX HD > aptX > AAC > SBC.
+
+    # Install codec packages
+    sudo dnf install -y --skip-unavailable \
+        pipewire-codec-aptx \
+        2>&1 | tail -1
+
+    local wireplumber_dir="$HOME/.config/wireplumber/bluetooth.lua.d"
+    mkdir -p "$wireplumber_dir"
+
+    local bt_conf="${wireplumber_dir}/51-bluez-config.lua"
+    if [[ ! -f "$bt_conf" ]]; then
+        cat > "$bt_conf" <<'EOF'
+bluez_monitor.properties = {
+  ["bluez5.enable-sbc-xq"] = true,
+  ["bluez5.enable-msbc"] = true,
+  ["bluez5.enable-hw-volume"] = true,
+  ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]",
+  ["bluez5.codecs"] = "[ ldac aptx_hd aptx aac sbc ]",
+}
+EOF
+        echo "  [OK] Bluetooth codec priority: LDAC > aptX HD > aptX > AAC > SBC"
+    else
+        echo "  [OK] Bluetooth audio codecs already configured"
+    fi
+
+    # Enable mSBC for HFP (higher quality microphone during calls)
+    local pipewire_bt_dir="$HOME/.config/pipewire/pipewire.conf.d"
+    mkdir -p "$pipewire_bt_dir"
+
+    local pw_bt_conf="${pipewire_bt_dir}/99-bluetooth.conf"
+    if [[ ! -f "$pw_bt_conf" ]]; then
+        cat > "$pw_bt_conf" <<'EOF'
+context.properties = {
+    bluez5.msbc-support = true
+    bluez5.sbc-xq-support = true
+}
+EOF
+        echo "  [OK] mSBC wideband speech enabled (better mic quality on calls)"
+    fi
 }
