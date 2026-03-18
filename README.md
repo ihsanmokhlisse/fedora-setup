@@ -47,7 +47,7 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 | Profile | Command | Best For | What's Included |
 |---------|---------|----------|-----------------|
 | **Standard** | `--profile standard` | General Users | The ultimate baseline. ZRAM tuning, Btrfs snapshots, Tuned power profiles, Firewalld hardening, MS Fonts, UI tweaks, and hardware video acceleration. |
-| **Developer** | `--profile dev` | Software Engineers | *Standard* + **Podman** (rootless containers), **Toolbox** (isolated dev environments), **NVM**, **Zsh**, **Starship** prompt, **Flatpak IDE integration** (flatpak-spawn), and **GNU Stow** (dotfiles management). |
+| **Developer** | `--profile dev` | Software Engineers | *Standard* + **Podman** (rootless containers), **Toolbox** (isolated dev environments), **NVM**, **Zsh**, **Starship** prompt, and **GNU Stow** (dotfiles management). |
 | **Gamer** | `--profile gaming` | Linux Gamers | *Standard* + **Steam**, **Lutris**, **Gamemode**, **MangoHud**, 32-bit Vulkan libs, and the crucial `vm.max_map_count` kernel tweak. |
 | **Ultimate** | `--profile ultimate` | Power Users | *Standard* + *Developer* + *Gamer* + **Debloat** (safely removes GNOME bloatware and completely disables Fedora/GNOME telemetry). |
 
@@ -97,7 +97,6 @@ FedoraFlow uses a **Profile System**. Every profile includes the core performanc
 <summary><b>👨‍💻 Developer Experience (Dev Profile)</b></summary>
 
 * **Podman + Toolbox:** Rootless, daemonless containers and isolated dev environments. Install messy build tools inside Toolbox without affecting the host OS.
-* **Flatpak IDE Integration:** Installs `flatpak-spawn` and creates host-wrapper scripts so Flatpak-sandboxed IDEs (VS Code, Cursor) can access host tools like `git`, `node`, `python3`, `podman`, etc.
 * **GNU Stow:** Automatically detects and symlinks a `~/.dotfiles` repository. Manage your `.zshrc`, `.gitconfig`, and `starship.toml` across machines effortlessly.
 * **NVM:** Node Version Manager for clean, per-project Node.js versions without polluting the system.
 * **Zsh + Starship:** A beautiful, fast, git-aware terminal prompt out of the box.

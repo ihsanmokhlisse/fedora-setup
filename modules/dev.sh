@@ -11,7 +11,6 @@ setup_dev_env() {
     install_podman
     install_toolbox
     install_nvm
-    setup_flatpak_ide_integration
     setup_dotfiles
     setup_terminal
 
@@ -58,38 +57,6 @@ install_toolbox() {
 
     echo "  [NOTE] Run 'toolbox enter' later to access your isolated dev environment."
 }
-setup_flatpak_ide_integration() {
-    echo ""
-    echo "[+] Configuring Flatpak IDE integration with host system..."
-
-    # flatpak-spawn allows Flatpak apps (like VS Code, Cursor) to execute
-    # commands on the host or inside Toolbox containers.
-    sudo dnf install -y flatpak-spawn 2>/dev/null | tail -1
-
-    # Create host-spawn wrapper scripts so Flatpak IDEs can find git, node, python etc.
-    local bin_dir="$HOME/.local/bin"
-    mkdir -p "$bin_dir"
-
-    local tools=("git" "node" "npm" "npx" "python3" "pip" "gcc" "make" "cargo" "go" "podman")
-    for tool in "${tools[@]}"; do
-        local wrapper="${bin_dir}/host-${tool}"
-        if [[ ! -f "$wrapper" ]]; then
-            cat > "$wrapper" <<EOF
-#!/bin/sh
-exec flatpak-spawn --host $tool "\$@"
-EOF
-            chmod +x "$wrapper"
-        fi
-    done
-
-    # Allow Flatpak IDEs to talk to the host session bus
-    sudo flatpak override --filesystem=home 2>/dev/null || true
-    sudo flatpak override --talk-name=org.freedesktop.Flatpak 2>/dev/null || true
-
-    echo "  [OK] Flatpak IDE wrappers installed in ~/.local/bin/host-*"
-    echo "  [NOTE] Point your Flatpak IDE's terminal to 'flatpak-spawn --host bash' for full host access"
-}
-
 setup_dotfiles() {
     echo ""
     echo "[+] Setting up dotfiles management (GNU Stow)..."
