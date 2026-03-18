@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Developer Environment setup — Docker, NVM, Zsh, Starship
+# Developer Environment setup — Podman, Toolbox, NVM, Zsh, Starship
+# Philosophy: Isolate dev dependencies from the host OS to maintain stability
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -7,7 +8,8 @@ setup_dev_env() {
     echo ""
     echo -e "${BOLD}━━━ Setting up Developer Environment ━━━${NC}"
 
-    install_docker
+    install_podman
+    install_toolbox
     install_nvm
     setup_terminal
 
@@ -15,27 +17,36 @@ setup_dev_env() {
     echo "[OK] Developer environment configured"
 }
 
-install_docker() {
+install_podman() {
     echo ""
-    echo "[+] Configuring Docker engine..."
+    echo "[+] Configuring Podman (Daemonless Container Engine)..."
 
-    if ! command -v docker &>/dev/null; then
-        sudo dnf -y install dnf-plugins-core
-        sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>&1 | tail -2
-    fi
+    # Install Podman and essential plugins
+    sudo dnf install -y podman podman-compose podman-docker toolbox 2>&1 | tail -2
 
-    sudo systemctl enable --now docker 2>/dev/null
-    
-    # Add user to docker group to avoid needing sudo
-    if ! groups "$USER" | grep -q '\bdocker\b'; then
-        sudo usermod -aG docker "$USER"
-        echo "  [OK] Added $USER to docker group (takes effect after logout/reboot)"
-    else
-        echo "  [OK] User already in docker group"
-    fi
+    # Enable lingering so rootless containers can run in the background
+    loginctl enable-linger "$USER"
+
+    # Set up user-level systemd directory for Podman containers
+    mkdir -p "$HOME/.config/systemd/user"
+
+    echo "  [OK] Podman installed and configured for rootless operation"
+    echo "  [OK] 'podman-docker' installed (you can still use the 'docker' command)"
 }
 
+install_toolbox() {
+    echo ""
+    echo "[+] Configuring Toolbox (Isolated Dev Environments)..."
+
+    # Toolbox allows developers to install libraries and build tools
+    # inside a container without polluting the host OS.
+    if ! command -v toolbox &>/dev/null; then
+        sudo dnf install -y toolbox 2>&1 | tail -2
+    fi
+
+    echo "  [OK] Toolbox installed."
+    echo "  [NOTE] Run 'toolbox enter' later to create your isolated dev container."
+}
 install_nvm() {
     echo ""
     echo "[+] Installing Node Version Manager (NVM)..."

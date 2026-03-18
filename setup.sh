@@ -156,7 +156,7 @@ run_all() {
     echo "    [x] Auto-updates (DNF security, Flatpak, firmware)"
     echo "    [x] Btrfs Snapshots (Timeshift + GRUB integration)"
     if [[ "$profile_name" == "dev" ]] || [[ "$profile_name" == "ultimate" ]]; then
-        echo "    [x] Dev Environment (Docker, NVM, Zsh, Starship)"
+        echo "    [x] Dev Environment (Podman, Toolbox, NVM, Zsh, Starship)"
     fi
     if [[ "$profile_name" == "gaming" ]] || [[ "$profile_name" == "ultimate" ]]; then
         echo "    [x] Gaming Environment (Steam, Lutris, Gamemode, Kernel tweaks)"
@@ -180,7 +180,7 @@ interactive_menu() {
     echo ""
     echo -e "  ${BOLD}── One-Shot Profiles ──${NC}"
     echo "   1) Standard   (Performance, Power, Security, UI)"
-    echo "   2) Developer  (Standard + Docker, NVM, Zsh, Dev Tools)"
+    echo "   2) Developer  (Standard + Podman, Toolbox, NVM, Zsh)"
     echo "   3) Gamer      (Standard + Steam, Gamemode, Kernel Tweaks)"
     echo "   4) Ultimate   (Standard + Developer + Gamer + Debloat)"
     echo ""

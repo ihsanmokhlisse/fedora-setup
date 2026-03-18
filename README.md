@@ -16,7 +16,7 @@ chmod +x setup.sh
 FedoraFlow now uses **Profiles**. Every profile includes the core performance, power, and security optimizations, but adds specific tools for your workflow.
 
 * **Standard** (`./setup.sh --profile standard`): The baseline. Performance, security, battery life, and UI tweaks.
-* **Developer** (`./setup.sh --profile dev`): Standard + Docker, NVM, Zsh, and Starship prompt.
+* **Developer** (`./setup.sh --profile dev`): Standard + Podman, Toolbox, NVM, Zsh, and Starship prompt.
 * **Gamer** (`./setup.sh --profile gaming`): Standard + Steam, Lutris, Gamemode, and Kernel `max_map_count` tweaks.
 * **Ultimate** (`./setup.sh --profile ultimate`): Standard + Dev + Gaming + Debloat (removes telemetry and GNOME bloatware).
 
@@ -29,7 +29,7 @@ You just installed Fedora and want everything set up perfectly—codecs, drivers
 * **Command:** `./setup.sh` -> Choose Option `1` (Standard)
 
 ### Scenario 2: The Developer Workspace
-You want the essential development tools, Docker (rootless), NVM, Zsh, and increased file descriptor limits so your IDE doesn't crash watching large projects.
+You want the essential development tools, Podman (rootless), Toolbox (isolated dev environments), NVM, Zsh, and increased file descriptor limits so your IDE doesn't crash watching large projects.
 * **Command:** `./setup.sh --profile dev`
 
 ### Scenario 3: The Linux Gamer
@@ -296,7 +296,7 @@ fedora-setup/
     ├── security.sh                   # Security hardening
     ├── updates.sh                    # System updates + auto-updates
     ├── backup.sh                     # Btrfs snapshots & backups
-    ├── dev.sh                        # Developer environment (Docker, Zsh)
+    ├── dev.sh                        # Developer environment (Podman, Toolbox, Zsh)
     ├── gaming.sh                     # Gaming tweaks (Steam, Gamemode)
     ├── debloat.sh                    # Removes telemetry and bloatware
     └── restore.sh                    # Rollback optimizations
