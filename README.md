@@ -11,33 +11,40 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-Run everything non-interactively:
+## Profiles
 
-```bash
-./setup.sh --all
-```
+FedoraFlow now uses **Profiles**. Every profile includes the core performance, power, and security optimizations, but adds specific tools for your workflow.
+
+* **Standard** (`./setup.sh --profile standard`): The baseline. Performance, security, battery life, and UI tweaks.
+* **Developer** (`./setup.sh --profile dev`): Standard + Docker, NVM, Zsh, and Starship prompt.
+* **Gamer** (`./setup.sh --profile gaming`): Standard + Steam, Lutris, Gamemode, and Kernel `max_map_count` tweaks.
+* **Ultimate** (`./setup.sh --profile ultimate`): Standard + Dev + Gaming + Debloat (removes telemetry and GNOME bloatware).
 
 ## Usage Scenarios
 
 FedoraFlow is highly modular. You don't have to run the whole suite if you only want specific improvements.
 
-### Scenario 1: The Fresh Install (Recommended)
+### Scenario 1: The Fresh Install (Standard)
 You just installed Fedora and want everything set up perfectly—codecs, drivers, themes, and performance.
-* **Command:** `./setup.sh` -> Choose Option `1` (Everything)
+* **Command:** `./setup.sh` -> Choose Option `1` (Standard)
 
-### Scenario 2: The Battery Saver (Laptop Users)
+### Scenario 2: The Developer Workspace
+You want the essential development tools, Docker (rootless), NVM, Zsh, and increased file descriptor limits so your IDE doesn't crash watching large projects.
+* **Command:** `./setup.sh --profile dev`
+
+### Scenario 3: The Linux Gamer
+You want Steam, Lutris, Gamemode, and the crucial `vm.max_map_count` kernel tweak so heavy games like Cyberpunk 2077 don't crash.
+* **Command:** `./setup.sh --profile gaming`
+
+### Scenario 4: The Battery Saver (Laptop Users)
 You love your current setup, but your laptop battery drains too fast. You only want the power optimizations (NVIDIA deep sleep, tuned profiles, charge thresholds).
 * **Command:** `./setup.sh --module power`
 
-### Scenario 3: The Performance Junkie
+### Scenario 5: The Performance Junkie
 Your system feels a bit sluggish. You want faster DNF downloads, optimized disk I/O, BBR network congestion control, and faster boot times.
 * **Command:** `./setup.sh --module optimize`
 
-### Scenario 4: The Developer Workspace
-You want the essential development tools, VS Code/Cursor, Docker/Podman, and increased file descriptor limits so your IDE doesn't crash watching large projects.
-* **Command:** `./setup.sh --module packages` and `./setup.sh --module optimize`
-
-### Scenario 5: Safe Revert
+### Scenario 6: Safe Revert
 You tried the optimizations, but a specific kernel parameter or power setting is causing issues with your specific hardware.
 * **Command:** `./setup.sh --restore`
 
@@ -289,6 +296,9 @@ fedora-setup/
     ├── security.sh                   # Security hardening
     ├── updates.sh                    # System updates + auto-updates
     ├── backup.sh                     # Btrfs snapshots & backups
+    ├── dev.sh                        # Developer environment (Docker, Zsh)
+    ├── gaming.sh                     # Gaming tweaks (Steam, Gamemode)
+    ├── debloat.sh                    # Removes telemetry and bloatware
     └── restore.sh                    # Rollback optimizations
 ```
 

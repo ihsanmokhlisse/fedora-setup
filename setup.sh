@@ -5,13 +5,15 @@ set -euo pipefail
 #  Detects your system and applies the best configuration automatically.
 #
 #  Usage:
-#    ./setup.sh              # Run everything (interactive)
-#    ./setup.sh --all        # Run everything (non-interactive)
+#    ./setup.sh              # Run interactive profile menu
+#    ./setup.sh --profile X  # Run a specific profile (standard, dev, gaming, ultimate)
 #    ./setup.sh --module X   # Run a specific module
 #    ./setup.sh --restore    # Revert performance/power optimizations
 #
+#  Profiles: standard, dev, gaming, ultimate
 #  Modules: sudo, repos, packages, flatpaks, nvidia, themes, extensions,
-#           gnome, lockscreen, power, security, updates, optimize, backup, restore
+#           gnome, lockscreen, power, security, updates, optimize, backup,
+#           dev, gaming, debloat, restore
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${SCRIPT_DIR}/setup.log"
@@ -61,12 +63,15 @@ run_module() {
         updates)    configure_updates ;;
         optimize)   optimize_system ;;
         backup)     configure_backups ;;
+        dev)        setup_dev_env ;;
+        gaming)     setup_gaming_env ;;
+        debloat)    setup_debloat ;;
         restore)    restore_system ;;
         *)
             err "Unknown module: $name"
             echo "Available: sudo, repos, packages, flatpaks, nvidia, themes,"
             echo "           extensions, gnome, lockscreen, power, security,"
-            echo "           updates, optimize, backup, restore"
+            echo "           updates, optimize, backup, dev, gaming, debloat, restore"
             return 1
             ;;
     esac
@@ -74,9 +79,13 @@ run_module() {
 
 run_all() {
     local start_time=$SECONDS
+    local profile_name="${1:-standard}"
 
     echo ""
-    echo -e "${BOLD}Phase 1/7 — System Basics${NC}"
+    echo -e "${GREEN}${BOLD}Starting FedoraFlow Profile: ${profile_name^^}${NC}"
+    echo ""
+
+    echo -e "${BOLD}Phase 1/8 — System Basics${NC}"
     configure_sudo
     setup_repos
 
@@ -113,6 +122,17 @@ run_all() {
     echo -e "${BOLD}Phase 8/8 — System Backup & Snapshots${NC}"
     configure_backups
 
+    # Profile Additions
+    if [[ "$profile_name" == "dev" ]] || [[ "$profile_name" == "ultimate" ]]; then
+        setup_dev_env
+    fi
+    if [[ "$profile_name" == "gaming" ]] || [[ "$profile_name" == "ultimate" ]]; then
+        setup_gaming_env
+    fi
+    if [[ "$profile_name" == "ultimate" ]]; then
+        setup_debloat
+    fi
+
     local elapsed=$(( SECONDS - start_time ))
     echo ""
     echo -e "${GREEN}${BOLD}╔═══════════════════════════════════════════════════════════╗${NC}"
@@ -135,6 +155,15 @@ run_all() {
     echo "    [x] Security (firewall, kernel, SELinux, fail2ban, SSH)"
     echo "    [x] Auto-updates (DNF security, Flatpak, firmware)"
     echo "    [x] Btrfs Snapshots (Timeshift + GRUB integration)"
+    if [[ "$profile_name" == "dev" ]] || [[ "$profile_name" == "ultimate" ]]; then
+        echo "    [x] Dev Environment (Docker, NVM, Zsh, Starship)"
+    fi
+    if [[ "$profile_name" == "gaming" ]] || [[ "$profile_name" == "ultimate" ]]; then
+        echo "    [x] Gaming Environment (Steam, Lutris, Gamemode, Kernel tweaks)"
+    fi
+    if [[ "$profile_name" == "ultimate" ]]; then
+        echo "    [x] Debloat & Privacy (Removed telemetry and bloatware)"
+    fi
     echo ""
     echo "  Recommended next steps:"
     echo "    1. Reboot the system for all changes to take effect"
@@ -149,55 +178,55 @@ run_all() {
 interactive_menu() {
     echo "Select what to set up:"
     echo ""
-    echo -e "  ${BOLD}── Full Setup ──${NC}"
-    echo "   1) Everything (recommended for fresh install)"
+    echo -e "  ${BOLD}── One-Shot Profiles ──${NC}"
+    echo "   1) Standard   (Performance, Power, Security, UI)"
+    echo "   2) Developer  (Standard + Docker, NVM, Zsh, Dev Tools)"
+    echo "   3) Gamer      (Standard + Steam, Gamemode, Kernel Tweaks)"
+    echo "   4) Ultimate   (Standard + Developer + Gamer + Debloat)"
     echo ""
-    echo -e "  ${BOLD}── System ──${NC}"
-    echo "   2) Passwordless sudo"
-    echo "   3) Repositories (RPM Fusion, Flathub, Chrome, Cursor, Terra)"
-    echo "   4) System packages (categorized)"
-    echo "   5) Flatpak applications"
-    echo "   6) NVIDIA drivers"
-    echo ""
-    echo -e "  ${BOLD}── Desktop ──${NC}"
-    echo "   7) Themes & appearance"
-    echo "   8) GNOME extensions"
-    echo "   9) GNOME settings & tweaks"
-    echo "  10) Lock screen wallpaper sync"
-    echo ""
-    echo -e "  ${BOLD}── Performance ──${NC}"
-    echo "  11) System optimization (DNF, boot, kernel, network, I/O)"
-    echo ""
-    echo -e "  ${BOLD}── Power & Security ──${NC}"
-    echo "  12) Power management (battery endurance)"
-    echo "  13) Security hardening"
-    echo "  14) System updates + auto-updates"
-    echo "  15) Configure Btrfs Snapshots (Timeshift)"
+    echo -e "  ${BOLD}── Individual Modules ──${NC}"
+    echo "   5) Passwordless sudo"
+    echo "   6) Repositories (RPM Fusion, Flathub, Chrome, Cursor, Terra)"
+    echo "   7) System packages (categorized)"
+    echo "   8) Flatpak applications"
+    echo "   9) NVIDIA drivers"
+    echo "  10) Themes & appearance"
+    echo "  11) GNOME extensions"
+    echo "  12) GNOME settings & tweaks"
+    echo "  13) Lock screen wallpaper sync"
+    echo "  14) System optimization (DNF, boot, kernel, network, I/O)"
+    echo "  15) Power management (battery endurance)"
+    echo "  16) Security hardening"
+    echo "  17) System updates + auto-updates"
+    echo "  18) Configure Btrfs Snapshots (Timeshift)"
     echo ""
     echo -e "  ${BOLD}── Maintenance ──${NC}"
-    echo "  16) Restore / Rollback optimizations"
+    echo "  19) Restore / Rollback optimizations"
     echo ""
     echo "   0) Exit"
     echo ""
-    read -rp "Choose [0-16]: " choice
+    read -rp "Choose [0-19]: " choice
 
     case "$choice" in
-        1)  run_all ;;
-        2)  configure_sudo ;;
-        3)  setup_repos ;;
-        4)  install_packages ;;
-        5)  install_flatpaks ;;
-        6)  install_nvidia ;;
-        7)  setup_themes ;;
-        8)  install_extensions ;;
-        9)  apply_gnome_settings ;;
-        10) configure_lockscreen_wallpaper_sync ;;
-        11) optimize_system ;;
-        12) configure_power ;;
-        13) configure_security ;;
-        14) configure_updates ;;
-        15) configure_backups ;;
-        16) restore_system ;;
+        1)  run_all "standard" ;;
+        2)  run_all "dev" ;;
+        3)  run_all "gaming" ;;
+        4)  run_all "ultimate" ;;
+        5)  configure_sudo ;;
+        6)  setup_repos ;;
+        7)  install_packages ;;
+        8)  install_flatpaks ;;
+        9)  install_nvidia ;;
+        10) setup_themes ;;
+        11) install_extensions ;;
+        12) apply_gnome_settings ;;
+        13) configure_lockscreen_wallpaper_sync ;;
+        14) optimize_system ;;
+        15) configure_power ;;
+        16) configure_security ;;
+        17) configure_updates ;;
+        18) configure_backups ;;
+        19) restore_system ;;
         0)  echo "Bye!"; exit 0 ;;
         *)  err "Invalid choice"; interactive_menu ;;
     esac
@@ -211,8 +240,14 @@ main() {
 
     require_fedora
 
-    if [[ "${1:-}" == "--all" ]]; then
-        run_all
+    if [[ "${1:-}" == "--all" ]] || [[ "${1:-}" == "--profile" && "${2:-}" == "standard" ]]; then
+        run_all "standard"
+    elif [[ "${1:-}" == "--profile" && "${2:-}" == "dev" ]]; then
+        run_all "dev"
+    elif [[ "${1:-}" == "--profile" && "${2:-}" == "gaming" ]]; then
+        run_all "gaming"
+    elif [[ "${1:-}" == "--profile" && "${2:-}" == "ultimate" ]]; then
+        run_all "ultimate"
     elif [[ "${1:-}" == "--restore" ]]; then
         restore_system
     elif [[ "${1:-}" == "--module" ]] && [[ -n "${2:-}" ]]; then
